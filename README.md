@@ -105,15 +105,7 @@ LogViewer.showsFloatingButton = true
 
 The SDK's logs, including its HTTP requests and WebSocket events, are then recorded and displayed in the viewer. Its settings screen controls the SDK's logger at runtime: the console and the log viewer each have their own switch, level and subsystems. The console starts with the destination types, level, subsystems and format of `LogConfig`, so configure them before installing the viewer, and don't change them afterwards.
 
-`StreamChatLogsUI` builds on the `StreamCoreLogsUI` product of [`stream-core-swift`](https://github.com/GetStream/stream-core-swift), which other SDKs built on StreamCore can use directly, passing the subsystems to list in the settings:
-
-```swift
-import StreamCoreLogsUI
-
-LogViewer.install(subsystems: LogSubsystem.allCases)
-```
-
-To manage the logger's destinations yourself instead, add a `LogViewerDestination` to `LogConfig.destinationTypes` or `LogConfig.destinations`.
+To manage the logger's destinations yourself instead, add the `LogViewerDestination` of `StreamChatLogsUI` to `LogConfig.destinationTypes` or `LogConfig.destinations`.
 
 ## 🔌 Other logging libraries
 

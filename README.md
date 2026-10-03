@@ -6,7 +6,7 @@
 
 An in-app log viewer for iOS. Inspect the logs, network requests and WebSocket events of your app right on the device, without a proxy or a cable, and share them with your team, Stream support or your AI agent.
 
-`StreamLogsUI` has no dependencies, so it works with any logging library. Stream's Chat SDK integrates it with a single line of code.
+`StreamLogsUI` has no dependencies, so it works with any logging library. Stream's Chat, Video and Feeds SDKs integrate it with a single line of code.
 
 ## ✨ Features
 
@@ -92,7 +92,15 @@ The keys can also be set one by one, e.g. `[.httpMethod: "GET", .httpURL: "https
 
 ## 🧩 Stream SDKs
 
-With [StreamChat](https://github.com/GetStream/stream-chat-swift), add the `StreamChatLogsUI` product of the `stream-chat-swift` package to your app, and install the viewer when the app launches:
+Each Stream SDK has a product that sends its logs to the viewer:
+
+| SDK | Package | Product |
+| --- | --- | --- |
+| [Chat](https://github.com/GetStream/stream-chat-swift) | `stream-chat-swift` | `StreamChatLogsUI` |
+| [Video](https://github.com/GetStream/stream-video-swift) | `stream-video-swift` | `StreamVideoLogsUI` |
+| [Feeds](https://github.com/GetStream/stream-feeds-swift) | `stream-feeds-swift` | `StreamFeedsLogsUI` |
+
+Add the product of your SDK to your app, and install the viewer when the app launches, e.g. with Chat:
 
 ```swift
 import StreamChatLogsUI
@@ -105,7 +113,9 @@ LogViewer.showsFloatingButton = true
 
 The SDK's logs, including its HTTP requests and WebSocket events, are then recorded and displayed in the viewer. Its settings screen controls the SDK's logger at runtime: the console and the log viewer each have their own switch, level and subsystems. The console starts with the destination types, level, subsystems and format of `LogConfig`, so configure them before installing the viewer, and don't change them afterwards.
 
-To manage the logger's destinations yourself instead, add the `LogViewerDestination` of `StreamChatLogsUI` to `LogConfig.destinationTypes` or `LogConfig.destinations`.
+To manage the logger's destinations yourself instead, add the product's `LogViewerDestination` to `LogConfig.destinationTypes` or `LogConfig.destinations`.
+
+Apps that use several Stream SDKs install the viewer once, with the product of any of them: the SDKs share their logger, so the logs of all of them are recorded. The settings list the subsystems of the SDK whose product installed the viewer.
 
 ## 🔌 Other logging libraries
 

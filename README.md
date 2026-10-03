@@ -6,7 +6,7 @@
 
 An in-app log viewer for iOS. Inspect the logs, network requests and WebSocket events of your app right on the device, without a proxy or a cable, and share them with your team, Stream support or your AI agent.
 
-`StreamLogsUI` has no dependencies, so it works with any logging library. Stream's Swift SDKs will integrate it with a single line of code.
+`StreamLogsUI` has no dependencies, so it works with any logging library. Stream's Chat SDK integrates it with a single line of code.
 
 ## ✨ Features
 
@@ -92,46 +92,28 @@ The keys can also be set one by one, e.g. `[.httpMethod: "GET", .httpURL: "https
 
 ## 🧩 Stream SDKs
 
-Integrations for Stream's SDKs are coming soon, so that the viewer can be set up with one line of code: `StreamChatLogsUI`, `StreamVideoLogsUI` and `StreamFeedsLogsUI`.
-
-Until then, add a destination to StreamCore's `Logger`, which the Stream SDKs use. The predefined metadata keys have the same raw values as StreamCore's `LogMetadataKey`, so HTTP requests and WebSocket events logged by the SDKs are displayed as such.
+With [StreamChat](https://github.com/GetStream/stream-chat-swift), add the `StreamChatLogsUI` product of the `stream-chat-swift` package to your app, and install the viewer when the app launches:
 
 ```swift
-import StreamCore
-import StreamLogsUI
+import StreamChatLogsUI
 
-final class LogViewerDestination: BaseLogDestination, @unchecked Sendable {
-    override func process(logDetails: LogDetails) {
-        InMemoryLogRecorder.shared.record(LogEntry(
-            date: logDetails.date,
-            level: LogEntry.Level(logDetails.level),
-            subsystems: LogSubsystem.allCases.filter { logDetails.subsystem.contains($0) }.map(\.description),
-            threadName: logDetails.threadName,
-            functionName: logDetails.functionName,
-            fileName: logDetails.fileName,
-            lineNumber: logDetails.lineNumber,
-            message: logDetails.message,
-            error: logDetails.error,
-            metadata: Dictionary(uniqueKeysWithValues: logDetails.metadata.map { key, value in
-                (LogEntry.MetadataKey(rawValue: key.rawValue), value)
-            })
-        ))
-    }
-}
-
-private extension LogEntry.Level {
-    init(_ level: LogLevel) {
-        switch level {
-        case .debug: self = .debug
-        case .info: self = .info
-        case .warning: self = .warning
-        case .error: self = .error
-        }
-    }
-}
-
-LogConfig.destinationTypes = [ConsoleLogDestination.self, LogViewerDestination.self]
+#if DEBUG
+LogViewer.install()
+LogViewer.showsFloatingButton = true
+#endif
 ```
+
+The SDK's logs, including its HTTP requests and WebSocket events, are then recorded and displayed in the viewer. Its settings screen controls the SDK's logger at runtime: the console and the log viewer each have their own switch, level and subsystems. The console starts with the destination types, level, subsystems and format of `LogConfig`, so configure them before installing the viewer, and don't change them afterwards.
+
+`StreamChatLogsUI` builds on the `StreamCoreLogsUI` product of [`stream-core-swift`](https://github.com/GetStream/stream-core-swift), which other SDKs built on StreamCore can use directly, passing the subsystems to list in the settings:
+
+```swift
+import StreamCoreLogsUI
+
+LogViewer.install(subsystems: LogSubsystem.allCases)
+```
+
+To manage the logger's destinations yourself instead, add a `LogViewerDestination` to `LogConfig.destinationTypes` or `LogConfig.destinations`.
 
 ## 🔌 Other logging libraries
 

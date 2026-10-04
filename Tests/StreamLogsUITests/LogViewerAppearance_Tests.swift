@@ -30,11 +30,11 @@ struct LogViewerAppearance_Tests {
     }
 
     @Test func customLevelStyleIsUsed() {
-        let subject = LogViewerAppearance(levelStyle: { _ in .init(color: .mint, iconName: "star") })
+        let subject = LogViewerAppearance(levelStyle: { _ in .init(color: .purple, iconName: "star") })
 
         let style = subject.levelStyle(.error)
 
-        #expect(style.color == .mint)
+        #expect(style.color == .purple)
         #expect(style.iconName == "star")
     }
 }

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+export SWIFT_LINT_VERSION='0.59.1'
+export SWIFT_FORMAT_VERSION='0.58.2'

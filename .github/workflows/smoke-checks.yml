@@ -1,0 +1,67 @@
+name: Smoke Checks
+
+on:
+  pull_request:
+    paths-ignore:
+      - 'README.md'
+
+  workflow_dispatch:
+    inputs:
+      verbose:
+        description: 'Run in verbose mode?'
+        type: boolean
+        required: false
+        default: false
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  HOMEBREW_NO_INSTALL_CLEANUP: 1 # Disable cleanup for homebrew, we don't need it on CI
+  IOS_SIMULATOR_DEVICE: "iPhone 17 Pro (26.5)"
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GITHUB_PR_NUM: ${{ github.event.pull_request.number }}
+  VERBOSE: ${{ github.event.inputs.verbose == 'true' && '--verbose' || '' }}
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  test:
+    name: Test
+    runs-on: macos-26
+    steps:
+    - uses: actions/checkout@v4.1.1
+    - uses: ./.github/actions/ruby-cache
+    - name: Run Tests
+      run: bundle exec fastlane test device:"${{ env.IOS_SIMULATOR_DEVICE }}" ${{ env.VERBOSE }}
+      timeout-minutes: 20
+    - uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: Test Results
+        path: fastlane/test_output/
+
+  build-demo:
+    name: Build Demo App
+    runs-on: macos-26
+    steps:
+    - uses: actions/checkout@v4.1.1
+    - uses: ./.github/actions/ruby-cache
+    - name: Build Demo App
+      run: bundle exec fastlane build_demo ${{ env.VERBOSE }}
+      timeout-minutes: 20
+
+  automated-code-review:
+    name: Automated Code Review
+    runs-on: macos-26
+    steps:
+    - uses: actions/checkout@v4.1.1
+      with:
+        fetch-depth: 0
+    - uses: ./.github/actions/bootstrap
+    - run: bundle exec fastlane lint_pr
+    - run: bundle exec fastlane rubocop
+    - run: bundle exec fastlane run_swift_format strict:true

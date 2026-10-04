@@ -80,4 +80,4 @@
 --wrapcollections before-first
 
 # Exclude paths
---exclude derived_data,.build
+--exclude derived_data,.build,spm_cache,vendor

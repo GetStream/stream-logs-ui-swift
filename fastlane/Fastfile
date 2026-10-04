@@ -1,0 +1,68 @@
+default_platform :ios
+opt_out_usage
+skip_docs
+
+xcode_version = ENV['XCODE_VERSION'] || '26.6'
+demo_project = 'DemoApp/StreamLogsUIDemo.xcodeproj'
+derived_data_path = 'derived_data'
+source_packages_path = 'spm_cache'
+is_localhost = !is_ci
+xcodebuild_formatter = FastlaneCore::Globals.verbose? ? '' : nil
+
+before_all do |lane|
+  if is_ci && ![:lint_pr, :rubocop, :run_swift_format].include?(lane)
+    xcode_select("/Applications/Xcode_#{xcode_version}.app")
+  end
+end
+
+desc 'Runs StreamLogsUI tests'
+lane :test do |options|
+  scan(
+    package_path: '.',
+    scheme: 'StreamLogsUI',
+    clean: is_localhost,
+    derived_data_path: derived_data_path,
+    cloned_source_packages_path: source_packages_path,
+    devices: options[:device],
+    result_bundle: true,
+    number_of_retries: 3,
+    xcodebuild_formatter: xcodebuild_formatter
+  )
+end
+
+desc 'Builds the demo app'
+lane :build_demo do
+  gym(
+    project: demo_project,
+    scheme: 'StreamLogsUIDemo',
+    configuration: 'Debug',
+    destination: 'generic/platform=iOS Simulator',
+    clean: is_localhost,
+    derived_data_path: derived_data_path,
+    cloned_source_packages_path: source_packages_path,
+    skip_archive: true,
+    skip_package_ipa: true,
+    skip_codesigning: true,
+    xcodebuild_formatter: xcodebuild_formatter
+  )
+end
+
+desc 'Run fastlane linting'
+lane :rubocop do
+  sh('bundle exec rubocop')
+end
+
+desc 'Run PR linting'
+lane :lint_pr do
+  danger(dangerfile: 'Dangerfile') if is_ci
+end
+
+desc 'Run source code formatting/linting'
+lane :run_swift_format do |options|
+  Dir.chdir('..') do
+    strict = options[:strict] ? '--lint' : nil
+    sh("swiftformat #{strict} --config .swiftformat .")
+    sh('swiftlint lint --config .swiftlint.yml --fix --progress --reporter json') unless strict
+    sh('swiftlint lint --config .swiftlint.yml --strict --progress --reporter json')
+  end
+end

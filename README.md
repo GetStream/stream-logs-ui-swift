@@ -242,7 +242,7 @@ let session = try LogSession(data: data)
 
 ## 📱 Demo app
 
-`DemoApp/StreamLogsUIDemo.xcodeproj` is a small coffee shop app that uses `StreamLogsUI` with no other dependencies. Open it in Xcode and run it on an iOS 16 simulator or device. It needs no backend: its requests are answered locally by a `URLProtocol`, and its live updates simulate a WebSocket.
+`DemoApp/StreamLogsUIDemo.xcodeproj` is a small coffee shop app that uses `StreamLogsUI` with no other dependencies. Open `StreamLogsUI.xcworkspace`, which contains both the package and the demo app, and run the `StreamLogsUIDemo` scheme on an iOS 16 simulator or device. The `StreamLogsUI` scheme builds the library and runs its tests. It needs no backend: its requests are answered locally by a `URLProtocol`, and its live updates simulate a WebSocket.
 
 - **Logger:** `Log.swift` sends each entry to the console and to the viewer, with the levels and subsystems chosen in the settings screen, and adds a custom `SECURITY` level.
 - **HTTP requests:** every request is logged with its metadata. Opening a product returns a 404 for its reviews, placing an order fails once with a 503 before the retry succeeds, and the **Offline** switch fails every request.

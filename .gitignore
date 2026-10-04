@@ -3,7 +3,10 @@
 
 # Swift Package Manager
 .build/
-.swiftpm/
+.swiftpm/*
+!.swiftpm/xcode/
+.swiftpm/xcode/*
+!.swiftpm/xcode/xcshareddata/
 Package.resolved
 
 # Xcode

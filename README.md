@@ -8,6 +8,8 @@ An in-app log viewer for iOS. Inspect the logs, network requests and WebSocket e
 
 `StreamLogsUI` has no dependencies, so it works with any logging library. Stream's Chat, Video and Feeds SDKs integrate it with a single line of code.
 
+https://github.com/user-attachments/assets/10725e03-6b5d-4fb5-8181-8eba8ad53ba7
+
 ## ✨ Features
 
 - Floating button you can drag or tuck away

@@ -3,10 +3,22 @@
 
 # Swift Package Manager
 .build/
-.swiftpm/
+.swiftpm/*
+!.swiftpm/xcode/
+.swiftpm/xcode/*
+!.swiftpm/xcode/xcshareddata/
 Package.resolved
 
 # Xcode
 DerivedData/
 xcuserdata/
 *.xcuserstate
+
+# fastlane
+derived_data/
+spm_cache/
+vendor/
+.bundle/
+fastlane/report.xml
+fastlane/test_output/
+fastlane/README.md

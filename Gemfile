@@ -1,0 +1,19 @@
+# frozen_string_literal: true
+
+source 'https://rubygems.org'
+
+git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
+
+gem 'danger', group: :danger_dependencies
+gem 'fastlane', group: :fastlane_dependencies
+gem 'lefthook'
+gem 'rubocop', '1.38', group: :rubocop_dependencies
+
+group :rubocop_dependencies do
+  gem 'rubocop-performance'
+  gem 'rubocop-require_tools'
+end
+
+group :danger_dependencies do
+  gem 'danger-commit_lint'
+end

@@ -45,6 +45,7 @@ struct InMemoryLogRecorder_Tests {
         #expect(subject.entries.isEmpty)
     }
 
+    @available(iOS 15, macOS 12, *)
     @Test func recordedEntriesArePublishedTogether() async {
         let subject = InMemoryLogRecorder(capacity: 10, publishInterval: 0.05)
 

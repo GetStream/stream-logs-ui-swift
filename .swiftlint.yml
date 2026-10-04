@@ -3,6 +3,8 @@ excluded:
   - .github
   - .swiftpm
   - derived_data
+  - spm_cache
+  - vendor
 
 only_rules:
   - attribute_name_spacing

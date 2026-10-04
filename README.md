@@ -65,31 +65,6 @@ NavigationStack {
 }
 ```
 
-### Recording logs
-
-`LogEntry` only requires a level and a message. The other fields are optional, and `metadata` holds any extra key-value pairs, which are displayed and searchable. Besides the predefined levels, apps can define their own, e.g. `LogEntry.Level(severity: 45, name: "SECURITY")`.
-
-```swift
-InMemoryLogRecorder.shared.record(LogEntry(
-    level: .info,
-    subsystems: ["Checkout"],
-    message: "Payment confirmed",
-    metadata: ["orderId": "8F2C1A"]
-))
-```
-
-Entries with the predefined HTTP metadata keys are shown as requests, with their method and status. Their request and response bodies can be browsed and searched in a JSON viewer, and their cURL command can be copied. The `.http` helper creates these keys from a request and its response:
-
-```swift
-InMemoryLogRecorder.shared.record(LogEntry(
-    level: .debug,
-    message: "200 GET /users",
-    metadata: .http(request: request, response: response, responseBody: data, error: error)
-))
-```
-
-The keys can also be set one by one, e.g. `[.httpMethod: "GET", .httpURL: "https://example.com/users"]`. Entries with `.webSocketReceivedPayload` or `.webSocketSentPayload` are shown as WebSocket messages, with their `.webSocketEventType`.
-
 ## 🧩 Stream SDKs
 
 Each Stream SDK has a product that sends its logs to the viewer:
@@ -116,6 +91,31 @@ The SDK's logs, including its HTTP requests and WebSocket events, are then recor
 To manage the logger's destinations yourself instead, add the product's `LogViewerDestination` to `LogConfig.destinationTypes` or `LogConfig.destinations`.
 
 Apps that use several Stream SDKs install the viewer once, with the product of any of them: the SDKs share their logger, so the logs of all of them are recorded. The settings list the subsystems of the SDK whose product installed the viewer.
+
+## 📝 Recording logs
+
+`LogEntry` only requires a level and a message. The other fields are optional, and `metadata` holds any extra key-value pairs, which are displayed and searchable. Besides the predefined levels, apps can define their own, e.g. `LogEntry.Level(severity: 45, name: "SECURITY")`.
+
+```swift
+InMemoryLogRecorder.shared.record(LogEntry(
+    level: .info,
+    subsystems: ["Checkout"],
+    message: "Payment confirmed",
+    metadata: ["orderId": "8F2C1A"]
+))
+```
+
+Entries with the predefined HTTP metadata keys are shown as requests, with their method and status. Their request and response bodies can be browsed and searched in a JSON viewer, and their cURL command can be copied. The `.http` helper creates these keys from a request and its response:
+
+```swift
+InMemoryLogRecorder.shared.record(LogEntry(
+    level: .debug,
+    message: "200 GET /users",
+    metadata: .http(request: request, response: response, responseBody: data, error: error)
+))
+```
+
+The keys can also be set one by one, e.g. `[.httpMethod: "GET", .httpURL: "https://example.com/users"]`. Entries with `.webSocketReceivedPayload` or `.webSocketSentPayload` are shown as WebSocket messages, with their `.webSocketEventType`.
 
 ## 🔌 Other logging libraries
 

@@ -19,6 +19,21 @@ An in-app log viewer for iOS. Inspect the logs, network requests and WebSocket e
 - Export and import log sessions
 - Share with Stream support or your AI agent
 
+## ⚖️ Compared to a network proxy
+
+An HTTP proxy captures everything that leaves the device, which is both its strength and its cost. `StreamLogsUI` is not a replacement for one, it is the shorter path to the questions you ask every day: which request failed, what did the server answer, which event arrived over the WebSocket.
+
+| | HTTP proxy | StreamLogsUI |
+| --- | --- | --- |
+| Setup | Install a certificate, trust it, configure the proxy, work around pinning | One line in the app |
+| Traffic | Every connection on the device, mixed together | Only what your app records |
+| WebSockets | Often unsupported, or needs extra setup | Built in and decoded |
+| Where | On your machine, with the device tethered to it | On the device, next to the screen you are testing |
+
+Keep the proxy for deeper investigations: traffic from code you don't control, TLS problems, or anything that needs the connection changed rather than observed, like rewriting a response, injecting an error or throttling the network. For a quick look at what the app is doing, it mostly buys you noise, with the two requests you care about buried between CDN, analytics and system traffic.
+
+The trade-off is that these logs are written, not captured. An entry that was never recorded can't be browsed, and one recorded with the wrong level or message can send you the wrong way, while the proxy always shows what really went over the wire. In the Stream SDKs the instrumentation is part of the SDK, so there is nothing to get wrong. In your own code, adding a log line is a small, mechanical change, and the kind of change coding agents are good at, so the gap between what happened and what was logged keeps getting smaller.
+
 ## 📋 Requirements
 
 - iOS 16+ to present the viewer. The package can be linked by apps and frameworks targeting iOS 13+, in which case the viewer does nothing on older versions.
@@ -237,16 +252,6 @@ let session = try LogSession(data: data)
 - **Initial filter:** set `LogViewer.defaultFilter`, or pass a `LogFilter` to `LogViewer.present(filter:)` or `LogListView(filter:)`, to open the viewer with levels, subsystems or search text already applied.
 - **Appearance:** `LogViewerAppearance` sets the color and icon of each level, and the subsystem and search highlight colors. Pass it to `LogViewer.present(appearance:)` or apply it with the `logViewerAppearance(_:)` modifier.
 - **Storage:** `InMemoryLogRecorder` keeps the latest 5,000 entries by default. To display entries kept elsewhere, for example in a file that survives app launches, implement `LogRecorder` and pass it to `LogViewer.present(recorder:)` or `LogListView(recorder:)`.
-
-## 🧪 Development
-
-```sh
-xcodebuild test \
-  -scheme StreamLogsUI \
-  -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
-swiftlint lint --config .swiftlint.yml --strict
-swiftformat --config .swiftformat --lint .
-```
 
 ## 📄 License
 

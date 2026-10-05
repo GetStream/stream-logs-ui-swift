@@ -9,6 +9,8 @@ gem 'fastlane', group: :fastlane_dependencies
 gem 'lefthook'
 gem 'rubocop', '1.38', group: :rubocop_dependencies
 
+eval_gemfile('fastlane/Pluginfile')
+
 group :rubocop_dependencies do
   gem 'rubocop-performance'
   gem 'rubocop-require_tools'

@@ -4,15 +4,87 @@ skip_docs
 
 xcode_version = ENV['XCODE_VERSION'] || '26.6'
 demo_project = 'DemoApp/StreamLogsUIDemo.xcodeproj'
+github_repo = ENV['GITHUB_REPOSITORY'] || 'GetStream/stream-logs-ui-swift'
+changelog_path = File.absolute_path('../CHANGELOG.md')
+swift_environment_path = File.absolute_path('../Sources/StreamLogsUI/Generated/SystemEnvironment+Version.swift')
 derived_data_path = 'derived_data'
 source_packages_path = 'spm_cache'
 is_localhost = !is_ci
 xcodebuild_formatter = FastlaneCore::Globals.verbose? ? '' : nil
+release_lanes = [:release, :merge_release, :merge_main, :publish_release, :get_sdk_version_from_environment]
 
 before_all do |lane|
-  if is_ci && ![:lint_pr, :rubocop, :run_swift_format].include?(lane)
-    xcode_select("/Applications/Xcode_#{xcode_version}.app")
+  if is_ci
+    setup_git_config if release_lanes.include?(lane)
+    xcode_select("/Applications/Xcode_#{xcode_version}.app") unless [:lint_pr, :rubocop, :run_swift_format, *release_lanes].include?(lane)
   end
+end
+
+# `release_ios_sdk` bumps the Info.plist of Xcode targets, which a Swift package doesn't have,
+# so this lane runs the same steps for the version file instead.
+desc 'Starts a new release, e.g. `bundle exec fastlane release version:0.1.0`'
+lane :release do |options|
+  version = options[:version].to_s
+  UI.user_error!('Pass the release version, e.g. `version:0.1.0`') unless version.match?(/\A\d+\.\d+\.\d+(-[0-9A-Za-z.]+)?\z/)
+  UI.user_error!("Tag #{version} already exists") if git_tag_exists(tag: version, remote: true)
+
+  ensure_git_status_clean
+  ensure_git_branch(branch: 'develop')
+  lint_swift_package
+  check_unsafe_flags
+
+  changes = touch_changelog(release_version: version, github_repo: github_repo, changelog_path: changelog_path)
+  content = File.read(swift_environment_path)
+  File.write(swift_environment_path, content.sub(/version: String = "[^"]+"/, "version: String = \"#{version}\""))
+
+  sh("git checkout -b release/#{version}")
+  sh('git add -A')
+  sh("git commit -m 'Bump #{version}'")
+  push_to_git_remote(tags: false)
+
+  create_pull_request(
+    api_token: ENV.fetch('GITHUB_TOKEN', nil),
+    repo: github_repo,
+    title: "#{version} Release",
+    head: "release/#{version}",
+    base: 'main',
+    body: changes
+  )
+end
+
+lane :merge_release do |options|
+  merge_release_to_main(author: options[:author])
+  sh('gh workflow run release-publish.yml --ref main')
+end
+
+lane :merge_main do
+  merge_main_to_develop
+  update_release_version_to_snapshot(file_path: swift_environment_path)
+  ensure_git_branch(branch: 'develop')
+  sh("git add #{swift_environment_path}")
+  sh("git commit -m 'Update release version to snapshot'")
+  sh('git push')
+end
+
+desc 'Completes an SDK release'
+lane :publish_release do
+  release_version = get_sdk_version_from_environment
+  UI.user_error!("Release #{release_version} has already been published.") if git_tag_exists(tag: release_version, remote: true)
+  UI.user_error!('Release version cannot be empty') if release_version.to_s.empty?
+  File.write(ENV['GITHUB_ENV'], "RELEASE_VERSION=#{release_version}\n", mode: 'a') if ENV['GITHUB_ENV']
+
+  ensure_git_branch(branch: 'main')
+
+  publish_ios_sdk(
+    skip_git_status_check: false,
+    version: release_version,
+    github_repo: github_repo,
+    changelog_path: changelog_path
+  )
+end
+
+lane :get_sdk_version_from_environment do
+  File.read(swift_environment_path).match(/String\s+=\s+"([\d.]+).*"/)[1]
 end
 
 desc 'Runs StreamLogsUI tests'

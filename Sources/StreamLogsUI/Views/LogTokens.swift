@@ -5,8 +5,6 @@
 import SwiftUI
 import UIKit
 
-// Values of the Stream design system tokens (StreamCoreUI's `DesignSystemTokens`),
-// copied because StreamLogsUI has no dependencies.
 @usableFromInline
 enum LogTokens {
     enum UIColors {

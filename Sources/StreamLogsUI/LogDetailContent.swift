@@ -4,6 +4,12 @@
 
 import Foundation
 
+// Everything the detail screen derives from an entry: the raw text split into displayable chunks,
+// the cURL command, and the JSON documents parsed into a tree.
+//
+// Splitting and parsing a large response body can take long enough to drop frames, so `LogDetailView`
+// builds this once per entry on a background task instead of computing it in `body`.
+// The copy menu reuses the same values, so the text that is copied is the text that is displayed.
 struct LogDetailContent: Sendable {
     let rawText: String
     // The lines of the raw text, with long lines cut into several chunks.

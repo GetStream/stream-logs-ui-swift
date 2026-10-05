@@ -11,6 +11,9 @@ import Foundation
 /// to a ``LogEntry`` and calls ``record(_:)``.
 /// Recorded entries are published in batches, at most once per ``publishInterval``.
 /// Removals are published immediately.
+///
+/// ``record(_:)`` is synchronous and can be called from any thread, so it fits loggers that aren't `async`.
+/// Entries are kept in the order they are recorded.
 public final class InMemoryLogRecorder: LogRecorder, @unchecked Sendable {
     /// The recorder displayed by ``LogListView`` by default.
     public static let shared = InMemoryLogRecorder()

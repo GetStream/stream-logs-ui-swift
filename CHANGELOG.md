@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 # Upcoming
 
 ### ✅ Added
-- Save the log settings across app launches
+- Save the log settings across app launches [#7](https://github.com/GetStream/stream-logs-ui-swift/pull/7)
 
 ### 🔄 Changed
 

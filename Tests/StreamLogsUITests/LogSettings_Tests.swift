@@ -174,6 +174,36 @@ final class LogSettings_Tests: XCTestCase {
         XCTAssertEqual(callCount, 2)
     }
 
+    func test_lastFilter_isNilUntilSet() {
+        XCTAssertNil(subject.lastFilter)
+    }
+
+    func test_lastFilter_isRestoredAfterRelaunch() {
+        let security = LogEntry.Level(severity: 45, name: "SECURITY")
+        subject.lastFilter = LogFilter(searchText: "channels", levels: [.error, security], subsystems: ["webSocket"])
+
+        let relaunched = LogSettings(userDefaults: userDefaults)
+
+        XCTAssertEqual(relaunched.lastFilter, LogFilter(levels: [.error, security], subsystems: ["webSocket"]))
+        XCTAssertEqual(relaunched.lastFilter?.levels.first { $0.severity == 45 }?.name, "SECURITY")
+    }
+
+    func test_lastFilter_setToNil_removesSavedFilter() {
+        subject.lastFilter = LogFilter(levels: [.error])
+
+        subject.lastFilter = nil
+
+        XCTAssertNil(LogSettings(userDefaults: userDefaults).lastFilter)
+    }
+
+    func test_reset_keepsLastFilter() {
+        subject.lastFilter = LogFilter(levels: [.error])
+
+        subject.reset()
+
+        XCTAssertEqual(subject.lastFilter, LogFilter(levels: [.error]))
+    }
+
     private func makeSettings() -> LogSettings {
         let settings = LogSettings(userDefaults: userDefaults)
         settings.availableSubsystems = ["database", "httpRequests", "webSocket"]

@@ -236,7 +236,7 @@ let session = try LogSession(data: data)
 ## 🎨 Customization
 
 - **Settings:** `LogSettings` holds the destinations shown in the settings screen, each with its own switch, level and subsystems. Changes are saved in `UserDefaults` across launches; call `setDefaults(_:)` on every launch, and Reset to Defaults restores them. Use `apply(_:)` to rebuild your logger's destinations when they change.
-- **Initial filter:** set `LogViewer.defaultFilter`, or pass a `LogFilter` to `LogViewer.present(filter:)` or `LogListView(filter:)`, to open the viewer with levels, subsystems or search text already applied.
+- **Initial filter:** the levels and subsystems chosen in the viewer's filters are saved across launches in `LogSettings.lastFilter`, and the viewer opens with them. Until they are chosen, it opens with `LogViewer.defaultFilter`. Pass a `LogFilter` to `LogViewer.present(filter:)` or `LogListView(filter:)` to open the viewer with levels, subsystems or search text already applied instead.
 - **Appearance:** `LogViewerAppearance` sets the color and icon of each level, and the subsystem and search highlight colors. Pass it to `LogViewer.present(appearance:)` or apply it with the `logViewerAppearance(_:)` modifier.
 - **Storage:** `InMemoryLogRecorder` keeps the latest 5,000 entries by default. To display entries kept elsewhere, for example in a file that survives app launches, implement `LogRecorder` and pass it to `LogViewer.present(recorder:)` or `LogListView(recorder:)`.
 

@@ -43,7 +43,26 @@ public final class LogSettings: ObservableObject {
         destinations.filter(\.isEnabled)
     }
 
+    /// The levels and subsystems last chosen in the filters of ``LogListView``, saved in `UserDefaults`.
+    ///
+    /// ``LogListView`` and ``LogViewer`` start with this filter unless another one is passed to them. The search text isn't saved.
+    public var lastFilter: LogFilter? {
+        get {
+            guard let data = userDefaults.data(forKey: Self.filterStorageKey),
+                  let saved = try? JSONDecoder().decode(SavedFilter.self, from: data) else { return nil }
+            return saved.filter
+        }
+        set {
+            if let newValue, let data = try? JSONEncoder().encode(SavedFilter(newValue)) {
+                userDefaults.set(data, forKey: Self.filterStorageKey)
+            } else {
+                userDefaults.removeObject(forKey: Self.filterStorageKey)
+            }
+        }
+    }
+
     private static let storageKey = "io.getstream.logs-ui.destinations"
+    private static let filterStorageKey = "io.getstream.logs-ui.filter"
 
     private let userDefaults: UserDefaults
     private var defaultDestinations: [LogDestinationSettings] = []
@@ -142,5 +161,27 @@ private struct SavedDestination: Codable, Equatable {
         destination.level = LogEntry.Level(severity: levelSeverity, name: levelName)
         destination.disabledSubsystems = Set(disabledSubsystems)
         return destination
+    }
+}
+
+private struct SavedFilter: Codable {
+    struct Level: Codable {
+        var severity: Int
+        var name: String
+    }
+
+    var levels: [Level]
+    var subsystems: [String]
+
+    init(_ filter: LogFilter) {
+        levels = filter.levels.sorted().map { Level(severity: $0.severity, name: $0.name) }
+        subsystems = filter.subsystems.sorted()
+    }
+
+    var filter: LogFilter {
+        LogFilter(
+            levels: Set(levels.map { LogEntry.Level(severity: $0.severity, name: $0.name) }),
+            subsystems: Set(subsystems)
+        )
     }
 }

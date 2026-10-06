@@ -17,7 +17,7 @@ final class LogViewerFloatingButton: UIView {
     var onStash: (() -> Void)?
     var onUnstash: (() -> Void)?
 
-    private let usesGlass: Bool = if #available(iOS 26.0, *) { true } else { false }
+    private let usesGlass = !(LogViewerFloatingButton.backgroundEffect is UIBlurEffect)
     private let backgroundView = UIVisualEffectView(effect: LogViewerFloatingButton.backgroundEffect)
     // The icon is drawn by masking a gradient with the symbol.
     private let iconGradientView = GradientView()
@@ -28,11 +28,13 @@ final class LogViewerFloatingButton: UIView {
     private static let iconGradientColors = [LogTokens.UIColors.accentPrimary, UIColor(rgb: 0x00acd4)]
 
     private static var backgroundEffect: UIVisualEffect {
+        #if compiler(>=6.2)
         if #available(iOS 26.0, *) {
             let effect = UIGlassEffect(style: .regular)
             effect.isInteractive = true
             return effect
         }
+        #endif
         return UIBlurEffect(style: .systemThickMaterial)
     }
 
@@ -41,11 +43,15 @@ final class LogViewerFloatingButton: UIView {
 
         // Interactive glass reacts to touches on itself, so it must receive them.
         backgroundView.isUserInteractionEnabled = usesGlass
+        #if compiler(>=6.2)
         if #available(iOS 26.0, *) {
             backgroundView.cornerConfiguration = .capsule()
         } else {
             backgroundView.clipsToBounds = true
         }
+        #else
+        backgroundView.clipsToBounds = true
+        #endif
         addSubview(backgroundView)
 
         iconView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: 24, weight: .semibold)

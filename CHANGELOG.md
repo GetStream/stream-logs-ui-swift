@@ -15,8 +15,6 @@ _October 07, 2026_
 ### 🐞 Fixed
 - Fix building with Xcode 16 [#7](https://github.com/GetStream/stream-logs-ui-swift/pull/7)
 
-### 🔄 Changed
-
 # [0.1.0](https://github.com/GetStream/stream-logs-ui-swift/releases/tag/0.1.0)
 _October 05, 2026_
 

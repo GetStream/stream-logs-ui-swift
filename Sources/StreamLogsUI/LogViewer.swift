@@ -24,7 +24,8 @@ public enum LogViewer {
 
     /// The filter applied when the viewer is presented, unless another one is passed to ``present(recorder:settings:appearance:filter:)``.
     ///
-    /// Also used when the viewer is presented by shaking the device. Defaults to showing every entry.
+    /// Also used when the viewer is presented by shaking the device. Once levels or subsystems are chosen in the viewer,
+    /// the ``LogSettings/lastFilter`` is applied instead. Defaults to showing every entry.
     public static var defaultFilter = LogFilter()
 
     /// Whether a floating button that opens the log viewer is shown above the app. Defaults to `false`.
@@ -51,17 +52,18 @@ public enum LogViewer {
     /// The sheet can be resized to small, medium and large heights. At the small and medium heights,
     /// the app behind it stays interactive. Does nothing if the viewer is already presented.
     ///
-    /// - Parameter filter: The filter applied when the viewer appears. Defaults to ``defaultFilter``.
+    /// - Parameter filter: The filter applied when the viewer appears.
+    ///   Defaults to the levels and subsystems last chosen in the viewer, or to ``defaultFilter`` until they are.
     public static func present(
         recorder: any LogRecorder = InMemoryLogRecorder.shared,
         settings: LogSettings = .shared,
         appearance: LogViewerAppearance = LogViewerAppearance(),
-        filter: LogFilter = defaultFilter
+        filter: LogFilter? = nil
     ) {
         guard #available(iOS 16.0, *), !isPresented else { return }
         let viewController = LogViewerHostingController(rootView: AnyView(
             NavigationStack {
-                LogListView(recorder: recorder, settings: settings, filter: filter)
+                LogListView(recorder: recorder, settings: settings, filter: filter ?? settings.lastFilter ?? defaultFilter)
             }
             .background(Color(UIColor { $0.userInterfaceStyle == .dark ? .black : .systemBackground }).ignoresSafeArea())
             .logViewerAppearance(appearance)

@@ -36,10 +36,12 @@ final class LogListViewModel: ObservableObject {
     private let recorder: any LogRecorder
     private var heldContent: Content?
     private var cancellable: AnyCancellable?
+    private var filterSavingCancellable: AnyCancellable?
 
     init(
         recorder: any LogRecorder,
         filter initialFilter: LogFilter = LogFilter(),
+        savingFilterTo settings: LogSettings? = nil,
         searchDebounceInterval: DispatchQueue.SchedulerTimeType.Stride = .milliseconds(200)
     ) {
         self.recorder = recorder
@@ -59,6 +61,11 @@ final class LogListViewModel: ObservableObject {
             .eraseToAnyPublisher()
         cancellable = Self.contentPublisher(entries: recorder.entriesPublisher, filter: filter)
             .sink { [weak self] in self?.receive($0) }
+        if let settings {
+            filterSavingCancellable = Publishers.CombineLatest($selectedLevels, $selectedSubsystems)
+                .dropFirst()
+                .sink { settings.lastFilter = LogFilter(levels: $0, subsystems: $1) }
+        }
     }
 
     var filteredEntries: [LogEntry] { content.filteredEntries }

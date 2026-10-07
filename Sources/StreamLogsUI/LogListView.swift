@@ -31,13 +31,20 @@ public struct LogListView: View {
 
     /// Creates a view that lists the entries of the given recorder, with access to the given logger settings.
     ///
+    /// The levels and subsystems chosen in the filters are saved in the settings, and restored the next time the view is created.
+    ///
     /// - Parameter filter: The filter applied when the view appears. It can then be changed from the view.
+    ///   Defaults to the settings' ``LogSettings/lastFilter``, or to showing every entry.
     public init(
         recorder: any LogRecorder = InMemoryLogRecorder.shared,
         settings: LogSettings = .shared,
-        filter: LogFilter = LogFilter()
+        filter: LogFilter? = nil
     ) {
-        _viewModel = StateObject(wrappedValue: LogListViewModel(recorder: recorder, filter: filter))
+        _viewModel = StateObject(wrappedValue: LogListViewModel(
+            recorder: recorder,
+            filter: filter ?? settings.lastFilter ?? LogFilter(),
+            savingFilterTo: settings
+        ))
         self.settings = settings
         self.recorder = recorder
         session = nil

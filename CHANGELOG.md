@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### 🔄 Changed
 
+# [0.2.0](https://github.com/GetStream/stream-logs-ui-swift/releases/tag/0.2.0)
+_October 07, 2026_
+
+### ✅ Added
+- Save the log settings and the viewer's level and subsystem filters across app launches [#7](https://github.com/GetStream/stream-logs-ui-swift/pull/7)
+
+### 🐞 Fixed
+- Fix building with Xcode 16 [#7](https://github.com/GetStream/stream-logs-ui-swift/pull/7)
+
 # [0.1.0](https://github.com/GetStream/stream-logs-ui-swift/releases/tag/0.1.0)
 _October 05, 2026_
 

@@ -192,7 +192,36 @@ final class LogListViewModel_Tests: XCTestCase {
         XCTAssertEqual(customRecorder.removeAllCallCount, 1)
     }
 
+    func test_changingFilters_savesLevelsAndSubsystemsToSettings() throws {
+        let (settings, suiteName) = try makeSettings()
+        defer { UserDefaults().removePersistentDomain(forName: suiteName) }
+        subject = LogListViewModel(recorder: recorder, filter: LogFilter(levels: [.debug]), savingFilterTo: settings)
+        XCTAssertNil(settings.lastFilter)
+
+        subject.searchText = "socket"
+        subject.selectedLevels = [.error]
+        subject.selectedSubsystems = ["WebSocket"]
+
+        XCTAssertEqual(settings.lastFilter, LogFilter(levels: [.error], subsystems: ["WebSocket"]))
+    }
+
+    func test_clearingFilters_savesEmptyFilter() throws {
+        let (settings, suiteName) = try makeSettings()
+        defer { UserDefaults().removePersistentDomain(forName: suiteName) }
+        subject = LogListViewModel(recorder: recorder, filter: LogFilter(levels: [.error]), savingFilterTo: settings)
+
+        subject.selectedLevels = []
+
+        XCTAssertEqual(settings.lastFilter, LogFilter())
+    }
+
     // MARK: - Private Helpers
+
+    private func makeSettings() throws -> (LogSettings, String) {
+        let suiteName = UUID().uuidString
+        let userDefaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        return (LogSettings(userDefaults: userDefaults), suiteName)
+    }
 
     private func makeViewModel(recorder: any LogRecorder) -> LogListViewModel {
         LogListViewModel(recorder: recorder, searchDebounceInterval: .zero)

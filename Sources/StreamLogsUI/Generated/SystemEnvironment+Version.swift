@@ -6,5 +6,5 @@ import Foundation
 
 enum SystemEnvironment {
     // The StreamLogsUI version, updated by the release lanes.
-    static let version: String = "0.2.0"
+    static let version: String = "0.3.0-SNAPSHOT"
 }

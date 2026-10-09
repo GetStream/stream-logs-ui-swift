@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 # Upcoming
 
 ### 🔄 Changed
+- Use `LogEntry.Subsystem` for subsystems on entries, filters, and settings [#9](https://github.com/GetStream/stream-logs-ui-swift/pull/9)
 
 # [0.2.0](https://github.com/GetStream/stream-logs-ui-swift/releases/tag/0.2.0)
 _October 07, 2026_

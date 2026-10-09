@@ -11,9 +11,9 @@ public struct LogFilter: Equatable, Sendable {
     /// Shows only entries with one of these levels. Empty shows every level.
     public var levels: Set<LogEntry.Level>
     /// Shows only entries in at least one of these subsystems. Empty shows every subsystem.
-    public var subsystems: Set<String>
+    public var subsystems: Set<LogEntry.Subsystem>
 
-    public init(searchText: String = "", levels: Set<LogEntry.Level> = [], subsystems: Set<String> = []) {
+    public init(searchText: String = "", levels: Set<LogEntry.Level> = [], subsystems: Set<LogEntry.Subsystem> = []) {
         self.searchText = searchText
         self.levels = levels
         self.subsystems = subsystems

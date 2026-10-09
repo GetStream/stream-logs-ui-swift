@@ -56,6 +56,17 @@ struct LogSession_Tests {
         #expect(json.contains("\"exportDate\" : \"2026-09-21T14:13:20.250Z\""))
     }
 
+    @Test func subsystemsAreEncodedAsNames() throws {
+        let entry = LogEntry(date: date, level: .info, subsystems: [.httpRequests, "Checkout"], message: "Request")
+
+        let json = try String(decoding: makeSession(entries: [entry]).encoded(), as: UTF8.self)
+
+        #expect(json.contains("\"subsystems\" : ["))
+        #expect(json.contains("\"httpRequests\""))
+        #expect(json.contains("\"Checkout\""))
+        #expect(!json.contains("rawValue"))
+    }
+
     @Test func metadataIsEncodedAsAnObject() throws {
         let entry = LogEntry(date: date, level: .info, message: "Request", metadata: [.httpURL: "https://example.com/a"])
 

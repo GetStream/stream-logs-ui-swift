@@ -13,6 +13,12 @@ enum Subsystem: String, CaseIterable {
     case auth
 }
 
+extension LogEntry.Subsystem {
+    init(_ subsystem: Subsystem) {
+        self.init(rawValue: subsystem.rawValue)
+    }
+}
+
 extension LogEntry.Level {
     static let security = LogEntry.Level(severity: 45, name: "SECURITY")
 }
@@ -27,7 +33,7 @@ enum Log {
 
     static func setUp() {
         let settings = LogSettings.shared
-        settings.availableSubsystems = Subsystem.allCases.map(\.rawValue)
+        settings.availableSubsystems = Subsystem.allCases.map(LogEntry.Subsystem.init)
         settings.setDefaults([
             LogDestinationSettings(id: consoleID, name: "Console", level: .info),
             LogDestinationSettings(id: logViewerID, name: "Log Viewer", level: .trace)
@@ -53,7 +59,7 @@ enum Log {
         let entry = LogEntry(
             date: Date(),
             level: level,
-            subsystems: [subsystem.rawValue],
+            subsystems: [LogEntry.Subsystem(subsystem)],
             threadName: "main",
             functionName: function,
             fileName: file,
@@ -63,7 +69,7 @@ enum Log {
             metadata: metadata
         )
         for destination in destinations where level >= destination.level {
-            guard !destination.disabledSubsystems.contains(subsystem.rawValue) else { continue }
+            guard !destination.disabledSubsystems.contains(LogEntry.Subsystem(subsystem)) else { continue }
             if destination.id == logViewerID {
                 InMemoryLogRecorder.shared.record(entry)
             } else {

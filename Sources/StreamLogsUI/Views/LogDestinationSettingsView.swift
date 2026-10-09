@@ -45,7 +45,7 @@ struct LogDestinationSettingsView: View {
             }
 
             ForEach(settings.availableSubsystems, id: \.self) { subsystem in
-                Toggle(subsystem, isOn: Binding(
+                Toggle(subsystem.rawValue, isOn: Binding(
                     get: { !destination.disabledSubsystems.contains(subsystem) },
                     set: { isEnabled in
                         if isEnabled {

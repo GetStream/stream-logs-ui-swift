@@ -338,7 +338,7 @@ private struct LogDetailSummary: View {
             if !entry.subsystems.isEmpty {
                 LogInfoRow(title: "Subsystems") {
                     LogFlowLayout(spacing: LogTokens.Spacing.xxs) {
-                        ForEach(entry.subsystems, id: \.self) { LogSubsystemTag(subsystem: $0) }
+                        ForEach(entry.subsystems, id: \.self) { LogSubsystemTag(subsystem: $0.rawValue) }
                     }
                 }
             }

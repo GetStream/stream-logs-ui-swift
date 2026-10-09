@@ -31,10 +31,10 @@ public final class LogSettings: ObservableObject {
     /// The level filter also lists any other level that has been recorded. Defaults to ``LogEntry/Level/standardLevels``.
     @Published public var availableLevels = LogEntry.Level.standardLevels
 
-    /// The names of the subsystems that can be enabled or disabled, and chosen in the subsystem filter of ``LogListView``.
+    /// The subsystems that can be enabled or disabled, and chosen in the subsystem filter of ``LogListView``.
     ///
     /// The subsystem filter also lists any other subsystem that has been recorded.
-    @Published public var availableSubsystems: [String] = [] {
+    @Published public var availableSubsystems: [LogEntry.Subsystem] = [] {
         didSet { notifyHandlers() }
     }
 
@@ -80,7 +80,7 @@ public final class LogSettings: ObservableObject {
     }
 
     /// The available subsystems that the given destination does not ignore.
-    public func enabledSubsystems(for destination: LogDestinationSettings) -> [String] {
+    public func enabledSubsystems(for destination: LogDestinationSettings) -> [LogEntry.Subsystem] {
         availableSubsystems.filter { !destination.disabledSubsystems.contains($0) }
     }
 
@@ -152,14 +152,14 @@ private struct SavedDestination: Codable, Equatable {
         isEnabled = destination.isEnabled
         levelSeverity = destination.level.severity
         levelName = destination.level.name
-        disabledSubsystems = destination.disabledSubsystems.sorted()
+        disabledSubsystems = destination.disabledSubsystems.sorted().map(\.rawValue)
     }
 
     func applied(to destination: LogDestinationSettings) -> LogDestinationSettings {
         var destination = destination
         destination.isEnabled = isEnabled
         destination.level = LogEntry.Level(severity: levelSeverity, name: levelName)
-        destination.disabledSubsystems = Set(disabledSubsystems)
+        destination.disabledSubsystems = Set(disabledSubsystems.map(LogEntry.Subsystem.init(rawValue:)))
         return destination
     }
 }
@@ -175,13 +175,13 @@ private struct SavedFilter: Codable {
 
     init(_ filter: LogFilter) {
         levels = filter.levels.sorted().map { Level(severity: $0.severity, name: $0.name) }
-        subsystems = filter.subsystems.sorted()
+        subsystems = filter.subsystems.sorted().map(\.rawValue)
     }
 
     var filter: LogFilter {
         LogFilter(
             levels: Set(levels.map { LogEntry.Level(severity: $0.severity, name: $0.name) }),
-            subsystems: Set(subsystems)
+            subsystems: Set(subsystems.map(LogEntry.Subsystem.init(rawValue:)))
         )
     }
 }

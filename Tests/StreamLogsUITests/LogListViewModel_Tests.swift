@@ -256,7 +256,7 @@ final class LogListViewModel_Tests: XCTestCase {
         cancellable.cancel()
     }
 
-    private func makeEntry(level: LogEntry.Level, subsystems: [String], message: String) -> LogEntry {
+    private func makeEntry(level: LogEntry.Level, subsystems: [LogEntry.Subsystem], message: String) -> LogEntry {
         LogEntry(
             date: Date(),
             level: level,

@@ -11,14 +11,14 @@ final class LogListViewModel: ObservableObject {
         var filter = LogFilter()
         var filteredEntries: [LogEntry] = []
         var availableLevels: [LogEntry.Level] = []
-        var availableSubsystems: [String] = []
+        var availableSubsystems: [LogEntry.Subsystem] = []
     }
 
     @Published private(set) var content = Content()
     @Published private(set) var newEntriesCount = 0
     @Published var searchText = ""
     @Published var selectedLevels: Set<LogEntry.Level> = []
-    @Published var selectedSubsystems: Set<String> = []
+    @Published var selectedSubsystems: Set<LogEntry.Subsystem> = []
     @Published var isRecording: Bool {
         didSet { recorder.isRecording = isRecording }
     }
@@ -72,7 +72,7 @@ final class LogListViewModel: ObservableObject {
 
     var availableLevels: [LogEntry.Level] { content.availableLevels }
 
-    var availableSubsystems: [String] { content.availableSubsystems }
+    var availableSubsystems: [LogEntry.Subsystem] { content.availableSubsystems }
 
     var isFiltering: Bool {
         !searchText.isEmpty || !selectedLevels.isEmpty || !selectedSubsystems.isEmpty
@@ -165,7 +165,7 @@ private extension LogFilter {
         return contains(entry.message)
             || entry.functionName.map(contains) == true
             || entry.fileName.map(contains) == true
-            || entry.subsystems.contains(where: contains)
+            || entry.subsystems.contains { contains($0.rawValue) }
             || entry.metadata.contains { contains($0.key.rawValue) || contains($0.value) }
     }
 

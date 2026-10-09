@@ -25,7 +25,7 @@ extension LogEntry: Codable {
             id: try container.decodeIfPresent(UUID.self, forKey: .id) ?? UUID(),
             date: try container.decode(Date.self, forKey: .date),
             level: try container.decode(Level.self, forKey: .level),
-            subsystems: try container.decodeIfPresent([String].self, forKey: .subsystems) ?? [],
+            subsystems: try container.decodeIfPresent([Subsystem].self, forKey: .subsystems) ?? [],
             message: try container.decode(String.self, forKey: .message),
             threadName: try container.decodeIfPresent(String.self, forKey: .threadName),
             functionName: try container.decodeIfPresent(String.self, forKey: .functionName),

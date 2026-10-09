@@ -87,7 +87,7 @@ struct LogRowView: View {
     private static let searchMatchContextLength = 40
 
     private func displayedTexts(http: LogHTTPRequest?, eventType: String?) -> [String] {
-        var texts = Array(entry.subsystems.prefix(Self.maxVisibleSubsystems))
+        var texts = entry.subsystems.prefix(Self.maxVisibleSubsystems).map(\.rawValue)
         if let http {
             texts += [http.method, http.path, http.host ?? http.url]
             texts += [http.status?.code.map(String.init), http.status?.reasonPhrase, http.error].compactMap { $0 }
@@ -100,7 +100,7 @@ struct LogRowView: View {
     private func footer(http: LogHTTPRequest?) -> some View {
         HStack(spacing: LogTokens.Spacing.xxs) {
             ForEach(entry.subsystems.prefix(Self.maxVisibleSubsystems), id: \.self) { subsystem in
-                LogSubsystemTag(subsystem: subsystem, searchText: searchText)
+                LogSubsystemTag(subsystem: subsystem.rawValue, searchText: searchText)
             }
             if entry.subsystems.count > Self.maxVisibleSubsystems {
                 LogSubsystemTag(subsystem: "+\(entry.subsystems.count - Self.maxVisibleSubsystems)")

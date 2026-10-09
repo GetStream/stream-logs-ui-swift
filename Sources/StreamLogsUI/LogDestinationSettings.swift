@@ -15,14 +15,14 @@ public struct LogDestinationSettings: Identifiable, Equatable, Sendable {
     /// The minimum level of the logs the destination receives.
     public var level: LogEntry.Level
     /// The subsystems whose logs the destination ignores.
-    public var disabledSubsystems: Set<String>
+    public var disabledSubsystems: Set<LogEntry.Subsystem>
 
     public init(
         id: String,
         name: String,
         isEnabled: Bool = true,
         level: LogEntry.Level,
-        disabledSubsystems: Set<String> = []
+        disabledSubsystems: Set<LogEntry.Subsystem> = []
     ) {
         self.id = id
         self.name = name

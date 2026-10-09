@@ -250,7 +250,7 @@ public struct LogListView: View {
                             viewModel.selectedSubsystems.remove(subsystem)
                         } label: {
                             HStack(spacing: 4) {
-                                Text(subsystem)
+                                Text(subsystem.rawValue)
                                 Image(systemName: "xmark")
                                     .font(.caption2)
                             }

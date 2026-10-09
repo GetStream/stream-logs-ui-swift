@@ -40,8 +40,8 @@ struct LogLevelPickerView: View {
 
 @available(iOS 16.0, *)
 struct LogSubsystemPickerView: View {
-    let subsystems: [String]
-    @Binding var selectedSubsystems: Set<String>
+    let subsystems: [LogEntry.Subsystem]
+    @Binding var selectedSubsystems: Set<LogEntry.Subsystem>
 
     var body: some View {
         LogPickerContainer(title: "Select Subsystems") {
@@ -58,7 +58,7 @@ struct LogSubsystemPickerView: View {
                             selectedSubsystems.insert(subsystem)
                         }
                     } label: {
-                        LogPickerRow(title: subsystem, isSelected: selectedSubsystems.contains(subsystem))
+                        LogPickerRow(title: subsystem.rawValue, isSelected: selectedSubsystems.contains(subsystem))
                     }
                 }
             }

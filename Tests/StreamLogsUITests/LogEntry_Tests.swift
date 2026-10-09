@@ -64,6 +64,14 @@ struct LogEntry_Tests {
         #expect(entry.sourceDescription == expected)
     }
 
+    @Test func predefinedSubsystemsUseTheirName() {
+        #expect(LogEntry.Subsystem.httpRequests.rawValue == "httpRequests")
+        #expect(LogEntry.Subsystem.database < .httpRequests)
+        #expect(LogEntry.Subsystem.httpRequests < .webSocket)
+        #expect(LogEntry.Subsystem(rawValue: "httpRequests") == .httpRequests)
+        #expect(LogEntry.Subsystem(stringLiteral: "Checkout") == LogEntry.Subsystem(rawValue: "Checkout"))
+    }
+
     @Test func standardLevelsAreOrderedBySeverity() {
         #expect(LogEntry.Level.standardLevels == LogEntry.Level.standardLevels.sorted())
         #expect(LogEntry.Level.warning < .error)

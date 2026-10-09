@@ -21,11 +21,11 @@ public struct LogEntry: Identifiable, Hashable, Sendable {
     public let date: Date
     /// The severity of the entry, displayed as a badge and used to filter the list.
     public let level: Level
-    /// The names of the subsystems the entry belongs to, like `httpRequests` or `webSocket`.
+    /// The subsystems the entry belongs to, like ``Subsystem/httpRequests`` or ``Subsystem/webSocket``.
     ///
     /// They're displayed as tags on the entry, can be selected in the subsystem filter,
     /// and are matched when searching. An entry matches the subsystem filter when any of its subsystems is selected.
-    public let subsystems: [String]
+    public let subsystems: [Subsystem]
     /// The text of the entry.
     ///
     /// The list shows the beginning of it, and the detail screen shows all of it. It's matched when searching,
@@ -59,7 +59,7 @@ public struct LogEntry: Identifiable, Hashable, Sendable {
         id: UUID = UUID(),
         date: Date = Date(),
         level: Level,
-        subsystems: [String] = [],
+        subsystems: [Subsystem] = [],
         message: String,
         threadName: String? = nil,
         functionName: String? = nil,
@@ -86,7 +86,7 @@ public struct LogEntry: Identifiable, Hashable, Sendable {
     public init(
         date: Date,
         level: Level,
-        subsystems: [String],
+        subsystems: [Subsystem],
         threadName: String,
         functionName: StaticString,
         fileName: StaticString,

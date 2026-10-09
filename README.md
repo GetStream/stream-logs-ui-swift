@@ -98,6 +98,8 @@ Apps that use several Stream SDKs install the viewer once, with the product of a
 
 `LogEntry` only requires a level and a message. The other fields are optional, and `metadata` holds any extra key-value pairs, which are displayed and searchable. Besides the predefined levels, apps can define their own, e.g. `LogEntry.Level(severity: 45, name: "SECURITY")`.
 
+Subsystems are `LogEntry.Subsystem` values. The shared ones are `.httpRequests`, `.webSocket`, `.database` and `.other`. A product SDK adds its own, and any other name is `LogEntry.Subsystem(rawValue:)`, which a string literal creates as well.
+
 ```swift
 InMemoryLogRecorder.shared.record(LogEntry(
     level: .info,

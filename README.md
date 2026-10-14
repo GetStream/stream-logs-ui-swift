@@ -59,6 +59,14 @@ LogViewer.install()
 #endif
 ```
 
+The viewer opens showing every entry. To open it with levels or subsystems already selected, set `LogViewer.defaultFilter`. Levels are matched exactly, so include every level you want to see:
+
+```swift
+LogViewer.defaultFilter = LogFilter(levels: [.debug, .error], subsystems: ["httpRequests", "webSocket"])
+```
+
+Once levels or subsystems are chosen in the viewer's filters, they are saved across launches and used instead of `defaultFilter` the next time it opens.
+
 ## 🧱 Using the logger standalone (without Stream products)
 
 ### Manual installation
@@ -100,7 +108,15 @@ LogViewer.presentsOnShake = true
 NavigationStack {
     LogListView()
 }
+
+// Open the viewer with levels, subsystems or search text already applied.
+LogViewer.present(filter: LogFilter(levels: [.error], subsystems: ["Checkout"]))
+
+// Or set the filter used whenever the viewer opens without one.
+LogViewer.defaultFilter = LogFilter(levels: [.warning, .error])
 ```
+
+Without a filter, the viewer opens showing every entry. Once levels or subsystems are chosen in the viewer's filters, they are saved across launches and used instead of `LogViewer.defaultFilter` the next time it opens. `LogListView(filter:)` accepts a `LogFilter` as well.
 
 ### Recording logs
 

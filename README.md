@@ -139,13 +139,21 @@ InMemoryLogRecorder.shared.record(httpEntry)
 Entries with `.webSocketReceivedPayload` or `.webSocketSentPayload` are shown as WebSocket messages, with their `.webSocketEventType`. The `.webSocket` helper creates these keys from the `Data` of a received (`receivedPayload:`) or sent (`sentPayload:`) message, and pretty-prints JSON:
 
 ```swift
-let webSocketEntry = LogEntry(
+let receivedEntry = LogEntry(
     level: .debug,
     subsystems: ["webSocket"],
     message: "message.new",
-    metadata: .webSocket(eventType: "message.new", receivedPayload: webSocketPayload)
+    metadata: .webSocket(eventType: "message.new", receivedPayload: receivedPayload)
 )
-InMemoryLogRecorder.shared.record(webSocketEntry)
+InMemoryLogRecorder.shared.record(receivedEntry)
+
+let sentEntry = LogEntry(
+    level: .debug,
+    subsystems: ["webSocket"],
+    message: "health.check",
+    metadata: .webSocket(eventType: "health.check", sentPayload: sentPayload)
+)
+InMemoryLogRecorder.shared.record(sentEntry)
 ```
 
 ### Integration with existing logging libraries

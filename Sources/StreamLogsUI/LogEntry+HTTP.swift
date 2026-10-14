@@ -106,7 +106,7 @@ public extension Dictionary where Key == LogEntry.MetadataKey, Value == String {
         return metadata
     }
 
-    private static func bodyDescription(of body: Data) -> String? {
+    internal static func bodyDescription(of body: Data) -> String? {
         guard !body.isEmpty else { return nil }
         guard let object = try? JSONSerialization.jsonObject(with: body, options: .fragmentsAllowed),
               let json = try? JSONSerialization.data(

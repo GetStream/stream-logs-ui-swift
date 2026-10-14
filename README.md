@@ -59,9 +59,11 @@ LogViewer.install()
 #endif
 ```
 
-## 📦 Manual installation
+## 🧱 Using the logger standalone (without Stream products)
 
-`StreamLogsUI` is distributed with Swift Package Manager. In Xcode, select **File → Add Package Dependencies…** and enter the repository URL, or add it to your `Package.swift`:
+### Manual installation
+
+The logger can be used without any Stream product, together with any logging library. `StreamLogsUI` is distributed with Swift Package Manager. In Xcode, select **File → Add Package Dependencies…** and enter the repository URL, or add it to your `Package.swift`:
 
 ```swift
 dependencies: [
@@ -77,7 +79,7 @@ targets: [
 
 The viewer is meant for debug builds, internal builds and demo apps. Gate it behind a debug flag or a hidden setting before shipping it to the App Store.
 
-## 🚀 Manual usage
+### Manual usage
 
 Record log messages in `InMemoryLogRecorder.shared` and present the viewer:
 
@@ -100,7 +102,7 @@ NavigationStack {
 }
 ```
 
-## 📝 Recording logs
+### Recording logs
 
 `LogEntry` only requires a level and a message. The other fields are optional, and `metadata` holds any extra key-value pairs, which are displayed and searchable. Besides the predefined levels, apps can define their own, e.g. `LogEntry.Level(severity: 45, name: "SECURITY")`.
 
@@ -125,7 +127,7 @@ InMemoryLogRecorder.shared.record(LogEntry(
 
 The keys can also be set one by one, e.g. `[.httpMethod: "GET", .httpURL: "https://example.com/users"]`. Entries with `.webSocketReceivedPayload` or `.webSocketSentPayload` are shown as WebSocket messages, with their `.webSocketEventType`.
 
-## 🔌 Other logging libraries
+### Integration with existing logging libraries
 
 <details>
 <summary>swift-log</summary>
@@ -238,13 +240,6 @@ let session = try LogSession(data: data)
 ```
 
 `LogEntry` is `Codable`, and dates are written as ISO 8601 strings with milliseconds.
-
-## 🎨 Customization
-
-- **Settings:** `LogSettings` holds the destinations shown in the settings screen, each with its own switch, level and subsystems. Changes are saved in `UserDefaults` across launches; call `setDefaults(_:)` on every launch, and Reset to Defaults restores them. Use `apply(_:)` to rebuild your logger's destinations when they change.
-- **Initial filter:** the levels and subsystems chosen in the viewer's filters are saved across launches in `LogSettings.lastFilter`, and the viewer opens with them. Until they are chosen, it opens with `LogViewer.defaultFilter`. Pass a `LogFilter` to `LogViewer.present(filter:)` or `LogListView(filter:)` to open the viewer with levels, subsystems or search text already applied instead.
-- **Appearance:** `LogViewerAppearance` sets the color and icon of each level, and the subsystem and search highlight colors. Pass it to `LogViewer.present(appearance:)` or apply it with the `logViewerAppearance(_:)` modifier.
-- **Storage:** `InMemoryLogRecorder` keeps the latest 5,000 entries by default. To display entries kept elsewhere, for example in a file that survives app launches, implement `LogRecorder` and pass it to `LogViewer.present(recorder:)` or `LogListView(recorder:)`.
 
 ## 📱 Demo app
 

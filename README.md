@@ -4,7 +4,7 @@
 
 # StreamLogsUI
 
-An in-app log viewer for iOS. Inspect the logs, network requests and WebSocket events of your app right on the device, without a proxy or a cable, and share them with your team, Stream support or your AI agent.
+An in-app log viewer for iOS. Inspect the logs of your app right on the device, without a proxy, and share them with your team, Stream support or your AI agent.
 
 `StreamLogsUI` has no dependencies, so it works with any logging library. Stream's Chat, Video and Feeds SDKs integrate it with a single line of code.
 
@@ -13,10 +13,9 @@ https://github.com/user-attachments/assets/10725e03-6b5d-4fb5-8181-8eba8ad53ba7
 ## ✨ Features
 
 - Floating button you can drag or tuck away
-- Keep using your app under the sheet
-- Search messages, bodies and payloads
-- Filter by level and subsystem
-- JSON viewer with search
+- Keep using your app under the logger view
+- Search logs and search through JSON payloads
+- Filter by level and subsystems
 - Copy any request as cURL
 - Export and import log sessions
 - Share with Stream support or your AI agent
@@ -26,13 +25,45 @@ https://github.com/user-attachments/assets/10725e03-6b5d-4fb5-8181-8eba8ad53ba7
 - iOS 16+ to present the viewer. The package can be linked by apps and frameworks targeting iOS 13+, in which case the viewer does nothing on older versions.
 - Swift 6.0, Xcode 16+
 
-## 📦 Installation
+## 🧩 Usage with Stream SDKs
 
-`StreamLogsUI` is distributed with Swift Package Manager. In Xcode, select **File → Add Package Dependencies…** and enter the repository URL, or add it to your `Package.swift`:
+Each Stream SDK has a product that sends its logs to the viewer:
+
+| SDK | Package | Product |
+| --- | --- | --- |
+| [Chat](https://github.com/GetStream/stream-chat-swift) | `stream-chat-swift` | `StreamChatLogsUI` |
+| [Video](https://github.com/GetStream/stream-video-swift) | `stream-video-swift` | `StreamVideoLogsUI` |
+| [Feeds](https://github.com/GetStream/stream-feeds-swift) | `stream-feeds-swift` | `StreamFeedsLogsUI` |
+
+Add the product of your SDK to a debug-only target of your app, so it is not included in the builds you ship to the App Store, and install the viewer when the app launches, e.g. with Chat:
+
+```swift
+import StreamChatLogsUI
+
+LogViewer.install()
+LogViewer.showsFloatingButton = true
+```
+
+The SDK's logs, including its HTTP requests and WebSocket events, are then recorded and displayed in the viewer. By default, the console uses the destination types, level, subsystems and format of `LogConfig`, so configure them before installing the viewer, and don't change them afterwards.
+
+```swift
+import StreamChat
+import StreamChatLogsUI
+
+LogConfig.level = .debug
+LogConfig.subsystems = [.httpRequests, .webSocket]
+LogViewer.install()
+```
+
+## 🧱 Manual Integration
+
+### Installation
+
+The logger can be used without any Stream product, together with any logging library. `StreamLogsUI` is distributed with Swift Package Manager. In Xcode, select **File → Add Package Dependencies…** and enter the repository URL, or add it to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/GetStream/stream-logs-ui-swift.git", branch: "develop")
+    .package(url: "https://github.com/GetStream/stream-logs-ui-swift.git", from: "0.2.0")
 ],
 targets: [
     .target(
@@ -42,11 +73,9 @@ targets: [
 ]
 ```
 
-The viewer is meant for debug builds, internal builds and demo apps. Gate it behind a debug flag or a hidden setting before shipping it to the App Store.
+The viewer is meant for debug builds, internal builds and demo apps. Add it to a debug-only target, so it is not included in the builds you ship to the App Store.
 
-## 🚀 Usage
-
-Record log messages in `InMemoryLogRecorder.shared` and present the viewer:
+### Usage
 
 ```swift
 import StreamLogsUI
@@ -58,7 +87,7 @@ LogViewer.present()
 // Or show a floating button that opens it. Drag the button past a screen edge to tuck it away.
 LogViewer.showsFloatingButton = true
 
-// Or present it when the device is shaken. Only enable this in debug builds.
+// Or present it when the device is shaken.
 LogViewer.presentsOnShake = true
 
 // Or embed the list in your own navigation stack.
@@ -67,44 +96,18 @@ NavigationStack {
 }
 ```
 
-## 🧩 Stream SDKs
-
-Each Stream SDK has a product that sends its logs to the viewer:
-
-| SDK | Package | Product |
-| --- | --- | --- |
-| [Chat](https://github.com/GetStream/stream-chat-swift) | `stream-chat-swift` | `StreamChatLogsUI` |
-| [Video](https://github.com/GetStream/stream-video-swift) | `stream-video-swift` | `StreamVideoLogsUI` |
-| [Feeds](https://github.com/GetStream/stream-feeds-swift) | `stream-feeds-swift` | `StreamFeedsLogsUI` |
-
-Add the product of your SDK to your app, and install the viewer when the app launches, e.g. with Chat:
-
-```swift
-import StreamChatLogsUI
-
-#if DEBUG
-LogViewer.install()
-LogViewer.showsFloatingButton = true
-#endif
-```
-
-The SDK's logs, including its HTTP requests and WebSocket events, are then recorded and displayed in the viewer. Its settings screen controls the SDK's logger at runtime: the console and the log viewer each have their own switch, level and subsystems. Changes are saved across launches, and Reset to Defaults restores the app's defaults. By default, the console uses the destination types, level, subsystems and format of `LogConfig`, so configure them before installing the viewer, and don't change them afterwards.
-
-To manage the logger's destinations yourself instead, add the product's `LogViewerDestination` to `LogConfig.destinationTypes` or `LogConfig.destinations`.
-
-Apps that use several Stream SDKs install the viewer once, with the product of any of them: the SDKs share their logger, so the logs of all of them are recorded. The settings list the subsystems of the SDK whose product installed the viewer.
-
-## 📝 Recording logs
+### Recording logs
 
 `LogEntry` only requires a level and a message. The other fields are optional, and `metadata` holds any extra key-value pairs, which are displayed and searchable. Besides the predefined levels, apps can define their own, e.g. `LogEntry.Level(severity: 45, name: "SECURITY")`.
 
 ```swift
-InMemoryLogRecorder.shared.record(LogEntry(
+let newEntry = LogEntry(
     level: .info,
     subsystems: ["Checkout"],
     message: "Payment confirmed",
     metadata: ["orderId": "8F2C1A"]
-))
+)
+InMemoryLogRecorder.shared.record(newEntry)
 ```
 
 Entries with the predefined HTTP metadata keys are shown as requests, with their method and status. Their request and response bodies can be browsed and searched in a JSON viewer, and their cURL command can be copied. The `.http` helper creates these keys from a request and its response:
@@ -119,7 +122,37 @@ InMemoryLogRecorder.shared.record(LogEntry(
 
 The keys can also be set one by one, e.g. `[.httpMethod: "GET", .httpURL: "https://example.com/users"]`. Entries with `.webSocketReceivedPayload` or `.webSocketSentPayload` are shown as WebSocket messages, with their `.webSocketEventType`.
 
-## 🔌 Other logging libraries
+```swift
+let httpEntry = LogEntry(
+    level: .debug,
+    subsystems: ["httpRequests"],
+    message: "200 GET /users",
+    metadata: [
+        .httpMethod: "GET",
+        .httpURL: "https://example.com/users",
+        .httpStatusCode: "200"
+    ]
+)
+InMemoryLogRecorder.shared.record(httpEntry)
+
+let webSocketEntry = LogEntry(
+    level: .debug,
+    subsystems: ["webSocket"],
+    message: "message.new",
+    metadata: [
+        .webSocketEventType: "message.new",
+        .webSocketReceivedPayload: """
+        {
+          "type": "message.new",
+          "message": { "text": "Hello" }
+        }
+        """
+    ]
+)
+InMemoryLogRecorder.shared.record(webSocketEntry)
+```
+
+### Integration with existing logging libraries
 
 <details>
 <summary>swift-log</summary>
@@ -233,13 +266,6 @@ let session = try LogSession(data: data)
 
 `LogEntry` is `Codable`, and dates are written as ISO 8601 strings with milliseconds.
 
-## 🎨 Customization
-
-- **Settings:** `LogSettings` holds the destinations shown in the settings screen, each with its own switch, level and subsystems. Changes are saved in `UserDefaults` across launches; call `setDefaults(_:)` on every launch, and Reset to Defaults restores them. Use `apply(_:)` to rebuild your logger's destinations when they change.
-- **Initial filter:** the levels and subsystems chosen in the viewer's filters are saved across launches in `LogSettings.lastFilter`, and the viewer opens with them. Until they are chosen, it opens with `LogViewer.defaultFilter`. Pass a `LogFilter` to `LogViewer.present(filter:)` or `LogListView(filter:)` to open the viewer with levels, subsystems or search text already applied instead.
-- **Appearance:** `LogViewerAppearance` sets the color and icon of each level, and the subsystem and search highlight colors. Pass it to `LogViewer.present(appearance:)` or apply it with the `logViewerAppearance(_:)` modifier.
-- **Storage:** `InMemoryLogRecorder` keeps the latest 5,000 entries by default. To display entries kept elsewhere, for example in a file that survives app launches, implement `LogRecorder` and pass it to `LogViewer.present(recorder:)` or `LogListView(recorder:)`.
-
 ## 📱 Demo app
 
 `DemoApp/StreamLogsUIDemo.xcodeproj` is a small coffee shop app that uses `StreamLogsUI` with no other dependencies. Open `StreamLogsUI.xcworkspace`, which contains both the package and the demo app, and run the `StreamLogsUIDemo` scheme on an iOS 16 simulator or device. The `StreamLogsUI` scheme builds the library and runs its tests. It needs no backend: its requests are answered locally by a `URLProtocol`, and its live updates simulate a WebSocket.
@@ -264,7 +290,7 @@ An HTTP proxy captures everything that leaves the device, which is both its stre
 
 Keep the proxy for deeper investigations: traffic from code you don't control, TLS problems, or anything that needs the connection changed rather than observed, like rewriting a response, injecting an error or throttling the network. For a quick look at what the app is doing, it mostly buys you noise, with the two requests you care about buried between CDN, analytics and system traffic.
 
-The trade-off is that these logs are written, not captured. An entry that was never recorded can't be browsed, and one recorded with the wrong level or message can send you the wrong way, while the proxy always shows what really went over the wire. In the Stream SDKs the instrumentation is part of the SDK, so there is nothing to get wrong. In your own code, adding a log line is a small, mechanical change, and the kind of change coding agents are good at, so the gap between what happened and what was logged keeps getting smaller.
+The trade-off is that these logs are written, not captured. An entry that was never recorded can't be browsed, and one recorded with the wrong level or message can send you the wrong way, while the proxy always shows what really went over the wire. In the Stream SDKs, the instrumentation is part of the SDK, so there is nothing to get wrong. In your own code, adding a log line is a small, mechanical change, and the kind of change coding agents are good at, so the gap between what happened and what was logged keeps getting smaller.
 
 ## 📄 License
 

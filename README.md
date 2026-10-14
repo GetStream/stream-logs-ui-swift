@@ -67,7 +67,7 @@ LogViewer.defaultFilter = LogFilter(levels: [.debug, .error], subsystems: ["http
 
 Once levels or subsystems are chosen in the viewer's filters, they are saved across launches and used instead of `defaultFilter` the next time it opens.
 
-## 🧱 Using the logger standalone (without Stream products)
+## 🧱 Manual Integration
 
 ### Manual installation
 

@@ -77,8 +77,6 @@ The viewer is meant for debug builds, internal builds and demo apps. Add it to a
 
 ### Usage
 
-Record log messages in `InMemoryLogRecorder.shared` and present the viewer:
-
 ```swift
 import StreamLogsUI
 

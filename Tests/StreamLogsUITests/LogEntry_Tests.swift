@@ -264,6 +264,46 @@ struct LogEntry_Tests {
         #expect(message == LogWebSocketMessage(direction: .sent, eventType: nil, payloadKey: .webSocketSentPayload, payload: "{}"))
     }
 
+    @Test func webSocketMetadataIsCreatedFromAReceivedPayload() throws {
+        let payload = Data(#"{"type":"message.new"}"#.utf8)
+
+        let entry = LogEntry(level: .debug, message: "message.new", metadata: .webSocket(eventType: "message.new", receivedPayload: payload))
+
+        let message = try #require(entry.webSocketMessage)
+        #expect(message == LogWebSocketMessage(
+            direction: .received,
+            eventType: "message.new",
+            payloadKey: .webSocketReceivedPayload,
+            payload: "{\n  \"type\" : \"message.new\"\n}"
+        ))
+    }
+
+    @Test func webSocketMetadataIsCreatedFromASentPayloadWithoutAnEventType() throws {
+        let payload = Data(#"{"type":"health.check"}"#.utf8)
+
+        let entry = LogEntry(level: .debug, message: "health.check", metadata: .webSocket(sentPayload: payload))
+
+        let message = try #require(entry.webSocketMessage)
+        #expect(message == LogWebSocketMessage(
+            direction: .sent,
+            eventType: nil,
+            payloadKey: .webSocketSentPayload,
+            payload: "{\n  \"type\" : \"health.check\"\n}"
+        ))
+    }
+
+    @Test func webSocketMetadataKeepsAPayloadThatIsNotJSONAsText() throws {
+        let entry = LogEntry(level: .debug, message: "ping", metadata: .webSocket(receivedPayload: Data("ping".utf8)))
+
+        #expect(try #require(entry.webSocketMessage).payload == "ping")
+    }
+
+    @Test func webSocketMetadataOfAnEmptyPayloadIsStillAWebSocketMessage() throws {
+        let entry = LogEntry(level: .debug, message: "empty", metadata: .webSocket(receivedPayload: Data()))
+
+        #expect(try #require(entry.webSocketMessage).payload.isEmpty)
+    }
+
     @Test func webSocketMessageRequiresPayload() {
         #expect(LogEntry(level: .info, message: "", metadata: [.webSocketEventType: "message.new"]).webSocketMessage == nil)
         #expect(LogEntry(level: .info, message: "", metadata: [:]).webSocketMessage == nil)

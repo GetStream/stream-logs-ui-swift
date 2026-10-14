@@ -120,7 +120,7 @@ InMemoryLogRecorder.shared.record(LogEntry(
 ))
 ```
 
-The keys can also be set one by one, e.g. `[.httpMethod: "GET", .httpURL: "https://example.com/users"]`. Entries with `.webSocketReceivedPayload` or `.webSocketSentPayload` are shown as WebSocket messages, with their `.webSocketEventType`.
+The keys can also be set one by one, e.g. `[.httpMethod: "GET", .httpURL: "https://example.com/users"]`:
 
 ```swift
 let httpEntry = LogEntry(
@@ -134,22 +134,26 @@ let httpEntry = LogEntry(
     ]
 )
 InMemoryLogRecorder.shared.record(httpEntry)
+```
 
-let webSocketEntry = LogEntry(
+Entries with `.webSocketReceivedPayload` or `.webSocketSentPayload` are shown as WebSocket messages, with their `.webSocketEventType`. The `.webSocket` helper creates these keys from the `Data` of a received (`receivedPayload:`) or sent (`sentPayload:`) message, and pretty-prints JSON:
+
+```swift
+let receivedEntry = LogEntry(
     level: .debug,
     subsystems: ["webSocket"],
     message: "message.new",
-    metadata: [
-        .webSocketEventType: "message.new",
-        .webSocketReceivedPayload: """
-        {
-          "type": "message.new",
-          "message": { "text": "Hello" }
-        }
-        """
-    ]
+    metadata: .webSocket(eventType: "message.new", receivedPayload: receivedPayload)
 )
-InMemoryLogRecorder.shared.record(webSocketEntry)
+InMemoryLogRecorder.shared.record(receivedEntry)
+
+let sentEntry = LogEntry(
+    level: .debug,
+    subsystems: ["webSocket"],
+    message: "health.check",
+    metadata: .webSocket(eventType: "health.check", sentPayload: sentPayload)
+)
+InMemoryLogRecorder.shared.record(sentEntry)
 ```
 
 ### Integration with existing logging libraries

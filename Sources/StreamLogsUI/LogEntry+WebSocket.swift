@@ -28,3 +28,33 @@ extension LogEntry {
         return nil
     }
 }
+
+public extension Dictionary where Key == LogEntry.MetadataKey, Value == String {
+    /// Creates the metadata of a WebSocket message received from the server, so the entry is displayed as a WebSocket message.
+    ///
+    /// JSON payloads are pretty-printed.
+    ///
+    /// - Parameters:
+    ///   - eventType: The type of the event, like `message.new`.
+    ///   - receivedPayload: The payload that was received.
+    static func webSocket(eventType: String? = nil, receivedPayload: Data) -> Self {
+        webSocket(eventType: eventType, payloadKey: .webSocketReceivedPayload, payload: receivedPayload)
+    }
+
+    /// Creates the metadata of a WebSocket message sent to the server, so the entry is displayed as a WebSocket message.
+    ///
+    /// JSON payloads are pretty-printed.
+    ///
+    /// - Parameters:
+    ///   - eventType: The type of the event, like `health.check`.
+    ///   - sentPayload: The payload that was sent.
+    static func webSocket(eventType: String? = nil, sentPayload: Data) -> Self {
+        webSocket(eventType: eventType, payloadKey: .webSocketSentPayload, payload: sentPayload)
+    }
+
+    private static func webSocket(eventType: String?, payloadKey: LogEntry.MetadataKey, payload: Data) -> Self {
+        var metadata: Self = [payloadKey: bodyDescription(of: payload) ?? ""]
+        metadata[.webSocketEventType] = eventType
+        return metadata
+    }
+}

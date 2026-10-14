@@ -4,7 +4,7 @@
 
 # StreamLogsUI
 
-An in-app log viewer for iOS. Inspect the logs, network requests and WebSocket events of your app right on the device, without a proxy or a cable, and share them with your team, Stream support or your AI agent.
+An in-app log viewer for iOS. Inspect the logs of your app right on the device, without a proxy, and share them with your team, Stream support or your AI agent.
 
 `StreamLogsUI` has no dependencies, so it works with any logging library. Stream's Chat, Video and Feeds SDKs integrate it with a single line of code.
 
@@ -13,10 +13,9 @@ https://github.com/user-attachments/assets/10725e03-6b5d-4fb5-8181-8eba8ad53ba7
 ## ✨ Features
 
 - Floating button you can drag or tuck away
-- Keep using your app under the sheet
-- Search messages, bodies and payloads
-- Filter by level and subsystem
-- JSON viewer with search
+- Keep using your app under the logger view
+- Search logs and search through JSON payloads
+- Filter by level and subsystems
 - Copy any request as cURL
 - Export and import log sessions
 - Share with Stream support or your AI agent

@@ -290,7 +290,7 @@ An HTTP proxy captures everything that leaves the device, which is both its stre
 
 Keep the proxy for deeper investigations: traffic from code you don't control, TLS problems, or anything that needs the connection changed rather than observed, like rewriting a response, injecting an error or throttling the network. For a quick look at what the app is doing, it mostly buys you noise, with the two requests you care about buried between CDN, analytics and system traffic.
 
-The trade-off is that these logs are written, not captured. An entry that was never recorded can't be browsed, and one recorded with the wrong level or message can send you the wrong way, while the proxy always shows what really went over the wire. In the Stream SDKs the instrumentation is part of the SDK, so there is nothing to get wrong. In your own code, adding a log line is a small, mechanical change, and the kind of change coding agents are good at, so the gap between what happened and what was logged keeps getting smaller.
+The trade-off is that these logs are written, not captured. An entry that was never recorded can't be browsed, and one recorded with the wrong level or message can send you the wrong way, while the proxy always shows what really went over the wire. In the Stream SDKs, the instrumentation is part of the SDK, so there is nothing to get wrong. In your own code, adding a log line is a small, mechanical change, and the kind of change coding agents are good at, so the gap between what happened and what was logged keeps getting smaller.
 
 ## 📄 License
 

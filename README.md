@@ -122,6 +122,31 @@ InMemoryLogRecorder.shared.record(LogEntry(
 
 The keys can also be set one by one, e.g. `[.httpMethod: "GET", .httpURL: "https://example.com/users"]`. Entries with `.webSocketReceivedPayload` or `.webSocketSentPayload` are shown as WebSocket messages, with their `.webSocketEventType`.
 
+```swift
+let httpEntry = LogEntry(
+    level: .debug,
+    subsystems: ["httpRequests"],
+    message: "200 GET /users",
+    metadata: [
+        .httpMethod: "GET",
+        .httpURL: "https://example.com/users",
+        .httpStatusCode: "200"
+    ]
+)
+InMemoryLogRecorder.shared.record(httpEntry)
+
+let webSocketEntry = LogEntry(
+    level: .debug,
+    subsystems: ["webSocket"],
+    message: "message.new",
+    metadata: [
+        .webSocketEventType: "message.new",
+        .webSocketReceivedPayload: #"{"type":"message.new","message":{"text":"Hello"}}"#
+    ]
+)
+InMemoryLogRecorder.shared.record(webSocketEntry)
+```
+
 ### Integration with existing logging libraries
 
 <details>

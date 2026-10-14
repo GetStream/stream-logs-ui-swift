@@ -35,15 +35,13 @@ Each Stream SDK has a product that sends its logs to the viewer:
 | [Video](https://github.com/GetStream/stream-video-swift) | `stream-video-swift` | `StreamVideoLogsUI` |
 | [Feeds](https://github.com/GetStream/stream-feeds-swift) | `stream-feeds-swift` | `StreamFeedsLogsUI` |
 
-Add the product of your SDK to your app, and install the viewer when the app launches, e.g. with Chat:
+Add the product of your SDK to a debug-only target of your app, so it is not included in the builds you ship to the App Store, and install the viewer when the app launches, e.g. with Chat:
 
 ```swift
 import StreamChatLogsUI
 
-#if DEBUG
 LogViewer.install()
 LogViewer.showsFloatingButton = true
-#endif
 ```
 
 The SDK's logs, including its HTTP requests and WebSocket events, are then recorded and displayed in the viewer. By default, the console uses the destination types, level, subsystems and format of `LogConfig`, so configure them before installing the viewer, and don't change them afterwards.
@@ -52,11 +50,9 @@ The SDK's logs, including its HTTP requests and WebSocket events, are then recor
 import StreamChat
 import StreamChatLogsUI
 
-#if DEBUG
 LogConfig.level = .debug
 LogConfig.subsystems = [.httpRequests, .webSocket]
 LogViewer.install()
-#endif
 ```
 
 The viewer opens showing every entry. To open it with levels or subsystems already selected, set `LogViewer.defaultFilter`. Levels are matched exactly, so include every level you want to see:
@@ -85,7 +81,7 @@ targets: [
 ]
 ```
 
-The viewer is meant for debug builds, internal builds and demo apps. Gate it behind a debug flag or a hidden setting before shipping it to the App Store.
+The viewer is meant for debug builds, internal builds and demo apps. Add it to a debug-only target, so it is not included in the builds you ship to the App Store.
 
 ### Manual usage
 
@@ -101,7 +97,7 @@ LogViewer.present()
 // Or show a floating button that opens it. Drag the button past a screen edge to tuck it away.
 LogViewer.showsFloatingButton = true
 
-// Or present it when the device is shaken. Only enable this in debug builds.
+// Or present it when the device is shaken.
 LogViewer.presentsOnShake = true
 
 // Or embed the list in your own navigation stack.

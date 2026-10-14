@@ -46,11 +46,18 @@ LogViewer.showsFloatingButton = true
 #endif
 ```
 
-The SDK's logs, including its HTTP requests and WebSocket events, are then recorded and displayed in the viewer. Its settings screen controls the SDK's logger at runtime: the console and the log viewer each have their own switch, level and subsystems. Changes are saved across launches, and Reset to Defaults restores the app's defaults. By default, the console uses the destination types, level, subsystems and format of `LogConfig`, so configure them before installing the viewer, and don't change them afterwards.
+The SDK's logs, including its HTTP requests and WebSocket events, are then recorded and displayed in the viewer. By default, the console uses the destination types, level, subsystems and format of `LogConfig`, so configure them before installing the viewer, and don't change them afterwards.
 
-To manage the logger's destinations yourself instead, add the product's `LogViewerDestination` to `LogConfig.destinationTypes` or `LogConfig.destinations`.
+```swift
+import StreamChat
+import StreamChatLogsUI
 
-Apps that use several Stream SDKs install the viewer once, with the product of any of them: the SDKs share their logger, so the logs of all of them are recorded. The settings list the subsystems of the SDK whose product installed the viewer.
+#if DEBUG
+LogConfig.level = .debug
+LogConfig.subsystems = [.httpRequests, .webSocket]
+LogViewer.install()
+#endif
+```
 
 ## 📦 Manual installation
 

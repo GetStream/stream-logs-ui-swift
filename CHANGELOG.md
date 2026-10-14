@@ -4,7 +4,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 # Upcoming
 
-### 🔄 Changed
+### ✅ Added
+- Add a helper to log WebSocket messages from their payload `Data` [#11](https://github.com/GetStream/stream-logs-ui-swift/pull/11)
 
 # [0.2.0](https://github.com/GetStream/stream-logs-ui-swift/releases/tag/0.2.0)
 _October 07, 2026_

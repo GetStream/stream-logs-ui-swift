@@ -141,7 +141,12 @@ let webSocketEntry = LogEntry(
     message: "message.new",
     metadata: [
         .webSocketEventType: "message.new",
-        .webSocketReceivedPayload: #"{"type":"message.new","message":{"text":"Hello"}}"#
+        .webSocketReceivedPayload: """
+        {
+          "type": "message.new",
+          "message": { "text": "Hello" }
+        }
+        """
     ]
 )
 InMemoryLogRecorder.shared.record(webSocketEntry)

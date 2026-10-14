@@ -25,48 +25,7 @@ https://github.com/user-attachments/assets/10725e03-6b5d-4fb5-8181-8eba8ad53ba7
 - iOS 16+ to present the viewer. The package can be linked by apps and frameworks targeting iOS 13+, in which case the viewer does nothing on older versions.
 - Swift 6.0, Xcode 16+
 
-## 📦 Installation
-
-`StreamLogsUI` is distributed with Swift Package Manager. In Xcode, select **File → Add Package Dependencies…** and enter the repository URL, or add it to your `Package.swift`:
-
-```swift
-dependencies: [
-    .package(url: "https://github.com/GetStream/stream-logs-ui-swift.git", branch: "develop")
-],
-targets: [
-    .target(
-        name: "YourApp",
-        dependencies: [.product(name: "StreamLogsUI", package: "stream-logs-ui-swift")]
-    )
-]
-```
-
-The viewer is meant for debug builds, internal builds and demo apps. Gate it behind a debug flag or a hidden setting before shipping it to the App Store.
-
-## 🚀 Usage
-
-Record log messages in `InMemoryLogRecorder.shared` and present the viewer:
-
-```swift
-import StreamLogsUI
-
-// Presents the viewer as a resizable sheet above the app.
-// At the small and medium heights, the app behind it stays interactive.
-LogViewer.present()
-
-// Or show a floating button that opens it. Drag the button past a screen edge to tuck it away.
-LogViewer.showsFloatingButton = true
-
-// Or present it when the device is shaken. Only enable this in debug builds.
-LogViewer.presentsOnShake = true
-
-// Or embed the list in your own navigation stack.
-NavigationStack {
-    LogListView()
-}
-```
-
-## 🧩 Stream SDKs
+## 🧩 Usage with Stream SDKs
 
 Each Stream SDK has a product that sends its logs to the viewer:
 
@@ -92,6 +51,47 @@ The SDK's logs, including its HTTP requests and WebSocket events, are then recor
 To manage the logger's destinations yourself instead, add the product's `LogViewerDestination` to `LogConfig.destinationTypes` or `LogConfig.destinations`.
 
 Apps that use several Stream SDKs install the viewer once, with the product of any of them: the SDKs share their logger, so the logs of all of them are recorded. The settings list the subsystems of the SDK whose product installed the viewer.
+
+## 📦 Manual installation
+
+`StreamLogsUI` is distributed with Swift Package Manager. In Xcode, select **File → Add Package Dependencies…** and enter the repository URL, or add it to your `Package.swift`:
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/GetStream/stream-logs-ui-swift.git", from: "0.2.0")
+],
+targets: [
+    .target(
+        name: "YourApp",
+        dependencies: [.product(name: "StreamLogsUI", package: "stream-logs-ui-swift")]
+    )
+]
+```
+
+The viewer is meant for debug builds, internal builds and demo apps. Gate it behind a debug flag or a hidden setting before shipping it to the App Store.
+
+## 🚀 Manual usage
+
+Record log messages in `InMemoryLogRecorder.shared` and present the viewer:
+
+```swift
+import StreamLogsUI
+
+// Presents the viewer as a resizable sheet above the app.
+// At the small and medium heights, the app behind it stays interactive.
+LogViewer.present()
+
+// Or show a floating button that opens it. Drag the button past a screen edge to tuck it away.
+LogViewer.showsFloatingButton = true
+
+// Or present it when the device is shaken. Only enable this in debug builds.
+LogViewer.presentsOnShake = true
+
+// Or embed the list in your own navigation stack.
+NavigationStack {
+    LogListView()
+}
+```
 
 ## 📝 Recording logs
 

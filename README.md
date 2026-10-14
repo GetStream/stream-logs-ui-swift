@@ -65,7 +65,7 @@ Once levels or subsystems are chosen in the viewer's filters, they are saved acr
 
 ## 🧱 Manual Integration
 
-### Manual installation
+### Installation
 
 The logger can be used without any Stream product, together with any logging library. `StreamLogsUI` is distributed with Swift Package Manager. In Xcode, select **File → Add Package Dependencies…** and enter the repository URL, or add it to your `Package.swift`:
 
@@ -83,7 +83,7 @@ targets: [
 
 The viewer is meant for debug builds, internal builds and demo apps. Add it to a debug-only target, so it is not included in the builds you ship to the App Store.
 
-### Manual usage
+### Usage
 
 Record log messages in `InMemoryLogRecorder.shared` and present the viewer:
 

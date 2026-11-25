@@ -32,7 +32,7 @@ permissions:
 jobs:
   test:
     name: Test
-    runs-on: macos-26
+    runs-on: { group: scaleway-macos }
     steps:
     - uses: actions/checkout@v4.1.1
     - uses: ./.github/actions/ruby-cache
@@ -47,7 +47,7 @@ jobs:
 
   build-demo:
     name: Build Demo App
-    runs-on: macos-26
+    runs-on: { group: scaleway-macos }
     steps:
     - uses: actions/checkout@v4.1.1
     - uses: ./.github/actions/ruby-cache
@@ -57,7 +57,7 @@ jobs:
 
   automated-code-review:
     name: Automated Code Review
-    runs-on: macos-26
+    runs-on: { group: scaleway-macos }
     steps:
     - uses: actions/checkout@v4.1.1
       with:
